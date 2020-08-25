@@ -1,0 +1,175 @@
+---
+title: "plot scaling"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+*Source* https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+```{r}
+# Load libraries
+library(ggplot2)
+library(ragg)
+library(palmerpenguins)
+```
+
+# plot adapted from htps:??github.com/allisonhorst/palmerpenguins
+
+```{r}
+p <- ggplot(na.omit(penguins), aes(x = flipper_length_mm,
+                                   y = body_mass_g)) +
+  geom_point(
+    aes(color = species, shape = species),
+    size = 3,
+    alpha = 0.8
+  ) +
+  ggforce::geom_mark_ellipse(
+    aes(filter = species == "Gentoo",
+        description = "Gentoo penguins are generally bigger")
+  ) +
+  labs(x = "Flipper Length [mm]", 
+       y = "Body Mass [g]",
+       colour = "Species",
+       shape = "Species")
+```
+
+```{r}
+# Save plot
+pngfile <- fs::path(knitr::fig_path(), "basis.png")
+```
+
+```{r}
+# Calling the device functions so that you can see the dimensions used.
+agg_png(pngfile, width = 20, height = 12, units = "cm",
+        res = 300)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+# because the plot is to be used in a poster, let's scale up
+
+```{r}
+pngfile2 <- fs::path(knitr::fig_path(), "large_basis.png")
+agg_png(pngfile2, width = 60, height = 36, units = "cm",
+        res = 300)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile2)
+```
+
+# another method to adjust using theming
+```{r}
+p1 <- p +
+  theme_gray(base_size = 33)
+pngfile3 <- fs::path(knitr::fig_path(), "theming.png")
+
+agg_png(pngfile3, width = 60, height = 36, units = "cm",
+        res = 300)
+plot(p1)
+invisible(dev.off())
+knitr::include_graphics(pngfile3)
+```
+
+# the nontheme elements are missing
+```{r}
+p1 <- ggplot(na.omit(penguins), aes(x = flipper_length_mm,
+                                    y = body_mass_g)) +
+  geom_point(
+    aes(color = species, shape = species),
+    size = 9,
+    alpha = 0.8
+  ) +
+  ggforce::geom_mark_ellipse(
+    aes(filter = species == "Gentoo",
+        description = "Gentoo penguins are generally bigger"),
+    size = 1.5,
+    label.fontsize = 36
+  ) +
+  labs(x = "Flipper Length [mm]",
+       y = "Body Mass [g]",
+       colour = "Species",
+       shape = "Species") +
+  theme_gray(base_size = 33)
+
+pngfile4 <- fs::path(knitr::fig_path(), "theming2.png")
+agg_png(pngfile4, width = 60, height = 36, units = "cm",
+        res = 300)
+plot(p1)
+invisible(dev.off())
+knitr::include_graphics(pngfile4)
+```
+
+# Resolution scaling
+```{r}
+# The first thing we need to do is convert our physical dimensions to pixel dimensions using our desired resolution. We want to end up with a 60x36cm plot at 300ppi. This gives us:
+c(60, 36) * 0.3937 *# Convert to inch
+
+300 # Convert to pixels
+```
+```{r}
+pngfile5 <- fs::path(knitr::fig_path(), "resolution.png")
+agg_png(pngfile5, width = 7087, height = 4252, units = "px",
+        res = 900)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile5)
+```
+
+# The final solution
+```{r}
+# Seeing that there is no single perfect solution to fixing this with the tools at our disposal, I’ve added a new argument to the *ragg* devices called scaling. It’s a multiplier that is applied to all absolute sizes, without interfering with the encoded dimensions of the output. Since we have increased the dimensions 3 times we set scaling = 3 to make sure that the absolute sized elements are keeping their relative size.
+
+pngfile6 <- fs::path(knitr::fig_path(), "scaling.png")
+agg_png(pngfile6, width = 60, height = 36, units = "cm",
+        res = 300, scaling = 3)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile6)
+```
+
+
+# Create a small version of the plot
+```{r}
+pngfile7 <- fs::path(knitr::fig_path(), "small")
+ggsave(
+  pngfile7,
+  p,
+  device = agg_png,
+  width = 10,
+  height = 6,
+  units = "cm", 
+  res = 300
+)
+
+knitr::include_graphics(pngfile)
+```
+# Use scaling to reduce size
+```{r}
+pngfile8 <- fs::path(knitr::fig_path(), "downscaling.png")
+ggsave(
+  pngfile8,
+  p,
+  device = agg_png,
+  width = 10,
+  height = 6,
+  units = "cm",
+  res = 300,
+  scaling = 0.5
+)
+knitr::include_graphics(pngfile8)
+```
+
+
+
+
+
+
+
+
+
+
+
