@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 *Source* https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
 ```{r}
 # Load libraries
+# Install ggplot2, tidyverse, ragg and palmerpenguins if you do not have them
 library(ggplot2)
 library(ragg)
 library(palmerpenguins)
