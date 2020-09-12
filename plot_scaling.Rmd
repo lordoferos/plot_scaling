@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 *Source* https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
 ```{r}
 # Load libraries
-# Install ggplot2, tidyverse, ragg and palmerpenguins if you do not have them
+# Install ggplot2, tidyverse, ragg and palmerpenguins if you do not have these packages
 library(ggplot2)
 library(ggthemes)
 library(tidymetrics)
@@ -64,7 +64,7 @@ invisible(dev.off())
 knitr::include_graphics(pngfile2)
 ```
 
-# another method to adjust using theming
+# another method to adjust scale using theming
 ```{r}
 p1 <- p +
   theme_gray(base_size = 33)
@@ -150,7 +150,7 @@ ggsave(
 
 knitr::include_graphics(pngfile)
 ```
-# Use scaling to reduce size
+# Use scaling to reduce size of plot
 ```{r}
 pngfile8 <- fs::path(knitr::fig_path(), "downscaling.png")
 ggsave(
@@ -165,14 +165,4 @@ ggsave(
 )
 knitr::include_graphics(pngfile8)
 ```
-
-
-
-
-
-
-
-
-
-
 
